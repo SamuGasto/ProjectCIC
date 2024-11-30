@@ -9,7 +9,6 @@ public class PlayerHUDController : MonoBehaviour
     public Slider tiempoEntreFramesSlider;
     public Button randomizeButton;
     public Button playPauseButton;
-    public Toggle lifeFormsToggle;
     public VisualElement playPauseIcon;
     public bool isPlaying;
     public Sprite playIcon;
@@ -32,9 +31,6 @@ public class PlayerHUDController : MonoBehaviour
         gameManager.velocidadPasoDelTiempo = tiempoEntreFramesSlider.value;
 
         playPauseIcon = ui.Q<VisualElement>("PlayPauseIcon");
-
-        lifeFormsToggle = ui.Q<Toggle>("LifeFormsToggle");
-        lifeFormsToggle.RegisterValueChangedCallback(OnLifeFormsToggleChanged);
     }
 
     void OnRandomizeButtonClicked()
@@ -52,10 +48,5 @@ public class PlayerHUDController : MonoBehaviour
     void OnTiempoEntreFramesSliderChanged(ChangeEvent<float> evt)
     {
         gameManager.velocidadPasoDelTiempo = evt.newValue;
-    }
-
-    void OnLifeFormsToggleChanged(ChangeEvent<bool> evt)
-    {
-        gridManager.useLifeForms = evt.newValue;
     }
 }

@@ -4,7 +4,6 @@
         <engine:GroupBox picking-mode="Ignore" style="flex-direction: row; justify-content: space-between; align-self: center; align-items: flex-start; width: 100%; height: 50%;">
             <engine:GroupBox>
                 <engine:Slider label="FPS" value="10" high-value="10" low-value="0.1" name="TiempoEntreFramesSlider" enabled="true" fill="true" class="slider" style="justify-content: space-around; align-items: stretch; flex-direction: column; align-self: stretch;" />
-                <engine:Toggle label="Use life forms" name="LifeFormsToggle" value="false" class="toggle" style="width: 230px; padding-left: 20px; padding-bottom: 0;" />
             </engine:GroupBox>
             <engine:Button name="PlayPauseButton" class="iconButton" style="white-space: nowrap; -unity-text-align: middle-center;">
                 <engine:VisualElement name="PlayPauseIcon" style="background-image: url(&quot;project://database/Assets/Sprites/UI/Play.png?fileID=6971524035090072126&amp;guid=edd9c5ce9878b66d8a058f1d71c381e0&amp;type=3#mingcute--play-fill(1)_0&quot;); flex-direction: column; align-self: stretch; justify-content: space-between; align-items: center; opacity: 1; position: relative; height: 50px; width: 50px; top: 20px; left: 26px;" />
