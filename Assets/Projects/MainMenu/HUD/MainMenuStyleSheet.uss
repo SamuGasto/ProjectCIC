@@ -1,0 +1,52 @@
+VisualElement {
+}
+
+.button:hover {
+    scale: 1.025 1.025;
+}
+
+.button {
+    background-image: url("project://database/Assets/Sprites/UI/Buttons/Button_Blue_3Slides.png?fileID=874640391&guid=3a0d65c8d5fa7231f940b835c07d0be6&type=3#Button_Blue_3Slides_0");
+    width: 384px;
+    height: 128px;
+    align-items: stretch;
+    align-self: center;
+    font-size: 28px;
+    padding-top: 0;
+    padding-bottom: 16px;
+    transition-duration: 0.1s;
+    border-top-left-radius: 30px;
+    border-top-right-radius: 30px;
+    border-bottom-right-radius: 30px;
+    border-bottom-left-radius: 30px;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+.title {
+    font-size: 100px;
+    color: rgb(255, 255, 255);
+    -unity-font-style: bold;
+    align-self: center;
+}
+
+.container {
+    padding-top: 70px;
+    padding-right: 70px;
+    padding-bottom: 70px;
+    padding-left: 70px;
+    flex-grow: 1;
+}
+
+.groupbox {
+    align-items: center;
+    align-self: center;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-wrap: wrap;
+    flex-basis: auto;
+    height: auto;
+    flex-direction: column;
+}

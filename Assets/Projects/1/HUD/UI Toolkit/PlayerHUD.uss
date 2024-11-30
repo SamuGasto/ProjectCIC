@@ -1,0 +1,83 @@
+.button:hover {
+    width: 384px;
+    height: 128px;
+    transition-property: all;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+    background-image: url("project://database/Assets/Sprites/UI/Buttons/Button_Blue_3Slides.png?fileID=874640391&guid=3a0d65c8d5fa7231f940b835c07d0be6&type=3#Button_Blue_3Slides_0");
+    background-color: rgba(255, 255, 255, 0);
+    -unity-text-align: upper-center;
+    -unity-font-style: normal;
+    padding-top: 15px;
+    scale: 1.025 1.025;
+}
+
+.button {
+    width: 384px;
+    height: 128px;
+    transition-property: all;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+    transition-delay: 0s;
+    background-image: url("project://database/Assets/Sprites/UI/Buttons/Button_Blue_3Slides.png?fileID=874640391&guid=3a0d65c8d5fa7231f940b835c07d0be6&type=3#Button_Blue_3Slides_0");
+    -unity-text-align: upper-center;
+    -unity-font-style: normal;
+    padding-top: 30px;
+    font-size: 28px;
+    background-color: rgba(255, 255, 255, 0);
+}
+
+.container {
+    padding-top: 25px;
+    padding-right: 25px;
+    padding-bottom: 25px;
+    padding-left: 25px;
+}
+
+.slider {
+    background-image: url("project://database/Assets/Sprites/UI/Banners/Carved_3Slides.png?fileID=2426063938347112814&guid=e70a6ef0c208126d987ca62204b45138&type=3#Carved_3Slides_0");
+    width: 576px;
+    height: 128px;
+    -unity-text-align: middle-center;
+    padding-left: 36px;
+    padding-right: 29px;
+    font-size: 28px;
+    padding-top: 38px;
+    padding-bottom: 16px;
+}
+
+.iconButton {
+    background-image: url("project://database/Assets/Sprites/UI/Buttons/Button_Hover.png?fileID=600123075258919542&guid=1edb3ceeb2244bc0dbc56053fcfa5441&type=3#Button_Hover_0");
+    width: 128px;
+    height: 128px;
+    transition-duration: 0.15s;
+}
+
+.iconButton:hover {
+    background-image: url("project://database/Assets/Sprites/UI/Buttons/Button_Hover.png?fileID=600123075258919542&guid=1edb3ceeb2244bc0dbc56053fcfa5441&type=3#Button_Hover_0");
+    width: 128px;
+    height: 128px;
+    scale: 1.03 1.03;
+    transition-duration: 0.15s;
+}
+
+.toggle {
+    background-image: url("project://database/Assets/Sprites/UI/Buttons/Button_Disable_3Slides.png?fileID=3588922068369331420&guid=e3089dfadcfb07fd68ac1de4642a109a&type=3#Button_Disable_3Slides_0");
+    width: 180px;
+    height: 54px;
+    align-items: center;
+    -unity-text-align: middle-left;
+    font-size: 16px;
+    padding-bottom: 4px;
+    padding-left: 10px;
+    flex-grow: 0;
+    flex-direction: row;
+    flex-wrap: wrap-reverse;
+    justify-content: flex-start;
+    align-self: auto;
+    align-content: auto;
+    padding-right: 6px;
+    white-space: normal;
+    text-overflow: clip;
+}
