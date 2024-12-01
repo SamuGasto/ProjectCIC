@@ -22,6 +22,7 @@ public class GameManager_2 : MonoBehaviour
     void Start()
     {
         gridManager.InitializeGrid();
+        gridManager.InitialPlaceEntity();
         Time.timeScale = 1;
         Debug.Log(Time.timeScale);
     }
