@@ -24,7 +24,6 @@ public class GameManager_2 : MonoBehaviour
         gridManager.InitializeGrid();
         gridManager.InitialPlaceEntity();
         Time.timeScale = 1;
-        Debug.Log(Time.timeScale);
     }
 
     void Update()

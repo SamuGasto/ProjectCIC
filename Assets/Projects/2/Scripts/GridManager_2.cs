@@ -18,9 +18,7 @@ public class GridManager_2 : MonoBehaviour
     [SerializeField] float predatorPreyDensity = 0.5f;
     [SerializeField] int numberOfPredatorsDiesWitoutFood = 3;
     public int[,] frontGrid;
-    public int[,] nextFrontGrid;
     public bool[,] backGrid;
-    private bool[,] backNextGrid;
     [System.Serializable]
     public class Predator
     {
@@ -38,16 +36,31 @@ public class GridManager_2 : MonoBehaviour
     public List<Predator> predatorCells; // Position and time life predator
     public List<Prey> preyCells;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void AddPrey(Vector2Int prey_position)
     {
-
+        Prey prey = new Prey() { position = prey_position, lastPosition = prey_position };
+        frontGrid[prey.position.x, prey.position.y] = 1;
+        preyCells.Add(prey);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void RemovePrey(Vector2Int prey_position)
     {
+        Prey prey = preyCells.Find(p => Vector2Int.Equals(p.position, prey_position));
+        frontGrid[prey.position.x, prey.position.y] = 0;
+        preyCells.Remove(prey);
+    }
 
+    public void AddPredator(Vector2Int predator_position)
+    {
+        Predator predator = new Predator() { position = predator_position, lastPosition = predator_position, timeWithoutFood = 0 };
+        frontGrid[predator.position.x, predator.position.y] = 2;
+        predatorCells.Add(predator);
+    }
+    public void RemovePredator(Vector2Int predator_position)
+    {
+        Predator predator = predatorCells.Find(p => Vector2Int.Equals(p.position, predator_position));
+        frontGrid[predator.position.x, predator.position.y] = 0;
+        predatorCells.Remove(predator);
     }
 
     public void InitializeGrid()
@@ -110,16 +123,26 @@ public class GridManager_2 : MonoBehaviour
 
     public void UpdateGrid()
     {
+        Debug.Log("---------------------");
+        List<Predator> predatorsAlive = new List<Predator>();
+        List<Prey> preysAlive = new List<Prey>();
+
         ClearTileMap();
+        Debug.Log("[UG] Limpieza Tilemap");
+
         foreach (var pred in predatorCells)
         {
             pred.timeWithoutFood++;
         }
+        Debug.Log("[UG] Se alimentaron los predadores");
 
-        Tuple<List<Predator>, List<Prey>> cellsUpdated = ChangeOfState();
-        Tuple<List<Predator>, List<Prey>> cellsMoved = Movement(cellsUpdated);
+        ChangeOfState(predatorsAlive, preysAlive);
+        Debug.Log("[UG] Se actualizaron los estados de los predadores y presas");
+        Movement(predatorsAlive, preysAlive);
+        Debug.Log("[UG] Se movieron los predadores y presas");
 
-        UpdateFrontGrid(cellsMoved);
+        UpdateFrontGrid(predatorsAlive, preysAlive);
+        Debug.Log("[UG] Se actualizaron los grids");
         Debug.Log("---------------------");
     }
 
@@ -136,31 +159,33 @@ public class GridManager_2 : MonoBehaviour
         }
     }
 
-    public void UpdateFrontGrid(Tuple<List<Predator>, List<Prey>> newCells)
+    public void UpdateFrontGrid(List<Predator> predatorsAlive, List<Prey> preysAlive)
     {
-        foreach (var predator in newCells.Item1)
+        int[,] newGrid = new int[gridSize, gridSize];
+        foreach (var predator in predatorsAlive)
         {
             tilemap_front.SetTile(new Vector3Int(predator.position.x, predator.position.y), predatorTile);
+            newGrid[predator.position.x, predator.position.y] = 2;
         }
 
-        foreach (var prey in newCells.Item2)
+        foreach (var prey in preysAlive)
         {
             tilemap_front.SetTile(new Vector3Int(prey.position.x, prey.position.y), preyTile);
+            newGrid[prey.position.x, prey.position.y] = 1;
         }
 
-        predatorCells = newCells.Item1;
-        preyCells = newCells.Item2;
+        predatorCells = predatorsAlive;
+        preyCells = preysAlive;
+        frontGrid = newGrid;
     }
 
-    public Tuple<List<Predator>, List<Prey>> ChangeOfState()
+    public void ChangeOfState(List<Predator> predatorsAlive, List<Prey> preysAlive)
     {
-        List<Predator> PredatorsAlive = new List<Predator>();
-        List<Prey> PreysAlive = new List<Prey>();
         // Si las presas encuentran predadores, mueren
         foreach (var prey in preyCells)
         {
-            Tuple<List<Predator>, List<Prey>, HashSet<Vector2Int>> neighbors = NearestNeighbor(prey.position.x, prey.position.y);
-            if (neighbors.Item1 != null && neighbors.Item1.Count > 0)
+            Tuple<List<Predator>, List<Prey>> neighbors = NearestNeighbor(prey.position.x, prey.position.y);
+            if (neighbors.Item1.Count > 0)
             {
                 Predator predatorSelected = neighbors.Item1[0];
 
@@ -169,31 +194,20 @@ public class GridManager_2 : MonoBehaviour
                     predatorSelected = neighbors.Item1[UnityEngine.Random.Range(0, neighbors.Item1.Count - 1)];
                 }
 
-                if (predatorSelected != null)
-                {
-                    Predator predatorInCell = predatorCells.Find(pred => Vector2Int.Equals(pred.position, predatorSelected.position));
+                frontGrid[prey.position.x, prey.position.y] = 0;
 
-                    if (predatorInCell != null)
-                    {
-                        if (predatorInCell.timeWithoutFood - 1 <= 0)
-                        {
-                            predatorInCell.timeWithoutFood = 0;
-                        }
-                        else
-                        {
-                            predatorInCell.timeWithoutFood--;
-                        }
-                    }
+                if (predatorSelected.timeWithoutFood - 1 <= 0)
+                {
+                    predatorSelected.timeWithoutFood = 0;
                 }
                 else
                 {
-                    Debug.LogWarning("Predator selected is null");
+                    predatorSelected.timeWithoutFood--;
                 }
-
             }
             else
             {
-                PreysAlive.Add(prey);
+                preysAlive.Add(prey);
             }
         }
 
@@ -202,58 +216,66 @@ public class GridManager_2 : MonoBehaviour
         {
             if (predator.timeWithoutFood < numberOfPredatorsDiesWitoutFood)
             {
-                PredatorsAlive.Add(predator);
+                predatorsAlive.Add(predator);
+            }
+            else
+            {
+                frontGrid[predator.position.x, predator.position.y] = 0;
             }
         }
-
-        Tuple<List<Predator>, List<Prey>> newCells = Tuple.Create(PredatorsAlive, PreysAlive);
-
-        return newCells;
-
     }
 
-    public Tuple<List<Predator>, List<Prey>> Movement(Tuple<List<Predator>, List<Prey>> newCells)
+    public void Movement(List<Predator> predatorsAlive, List<Prey> preysAlive)
     {
-        foreach (var pred in newCells.Item1)
-        {
-            HashSet<Vector2Int> freeSpaces = NearestNeighbor(pred.position.x, pred.position.y).Item3;
+        List<Vector2Int> occupedPositions = new List<Vector2Int>();
 
-            foreach (var spaces in freeSpaces)
-            { // Verificar si hay espacio libre
-                if (spaces != pred.lastPosition)
-                { // Si hay espacio libre, y no es la celda anterior, se mueve
-                    pred.lastPosition = pred.position;
-                    pred.position = spaces;
-                    break;
+        foreach (var pred in predatorsAlive)
+        {
+            pred.lastPosition = pred.position;
+
+            List<Vector2Int> freeSpaces = GetFreeSpaces(occupedPositions, pred.position, pred.position.x, pred.position.y);
+
+            if (freeSpaces.Count > 0)
+            {
+                Vector2Int newPosition = freeSpaces[0];
+
+                if (freeSpaces.Count >= 1)
+                {
+                    newPosition = freeSpaces[UnityEngine.Random.Range(0, freeSpaces.Count - 1)];
                 }
+
+                pred.lastPosition = pred.position;
+                pred.position = newPosition;
             }
+
 
         }
 
-        foreach (var prey in newCells.Item2)
+        foreach (var prey in preysAlive)
         {
-            HashSet<Vector2Int> freeSpaces = NearestNeighbor(prey.position.x, prey.position.y).Item3;
+            List<Vector2Int> freeSpaces = GetFreeSpaces(occupedPositions, prey.position, prey.position.x, prey.position.y);
+            prey.lastPosition = prey.position;
 
-            foreach (var spaces in freeSpaces)
-            { // Verificar si hay espacio libre
-                if (spaces != prey.lastPosition)
-                { // Si hay espacio libre, y no es la celda anterior, se mueve
-                    prey.lastPosition = prey.position;
-                    prey.position = spaces;
-                    break;
+            if (freeSpaces.Count > 0)
+            {
+                Vector2Int newPosition = freeSpaces[0];
+
+                if (freeSpaces.Count >= 1)
+                {
+                    newPosition = freeSpaces[UnityEngine.Random.Range(0, freeSpaces.Count - 1)];
                 }
+
+                prey.lastPosition = prey.position;
+                prey.position = newPosition;
             }
         }
-
-        return newCells;
     }
 
-    public Tuple<List<Predator>, List<Prey>, HashSet<Vector2Int>> NearestNeighbor(int x, int y)
+    public Tuple<List<Predator>, List<Prey>> NearestNeighbor(int x, int y)
     /// Devuelve la cantidad de predadores y presas cercanas a la celda x,y de la siguiente forma: (pos_predadores, cantidad_predadores, pos_presas, cantidad_presas)
     {
         List<Predator> predatorNeighbors = new List<Predator>();
         List<Prey> preyNeighbors = new List<Prey>();
-        HashSet<Vector2Int> freeSpaces = new HashSet<Vector2Int>();
 
         for (int dx = -1; dx <= 1; dx++)
         {
@@ -262,25 +284,52 @@ public class GridManager_2 : MonoBehaviour
                 if (dx == 0 && dy == 0) continue; // No revisa su celda actual
 
                 int nx = x + dx, ny = y + dy;
-                if (nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize && frontGrid[nx, ny] == 1)
+                if (nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize)
                 {
-                    Prey prey = preyCells.Find(p => Vector2Int.Equals(p.position, new Vector2Int(nx, ny)));
-                    preyNeighbors.Add(prey);
-                }
-                else if (nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize && frontGrid[nx, ny] == 2)
-                {
+                    if (frontGrid[nx, ny] == 1)
+                    {
+                        Prey prey = preyCells.Find(p => Vector2Int.Equals(p.position, new Vector2Int(nx, ny)));
+                        preyNeighbors.Add(prey);
+                    }
+                    else if (frontGrid[nx, ny] == 2)
+                    {
+                        Predator predator = predatorCells.Find(p => Vector2Int.Equals(p.position, new Vector2Int(nx, ny)));
+                        predatorNeighbors.Add(predator);
+                    }
 
-                    Predator predator = predatorCells.Find(p => Vector2Int.Equals(p.position, new Vector2Int(nx, ny)));
-                    predatorNeighbors.Add(predator);
-                }
-                else if (nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize)
-                {
-                    freeSpaces.Add(new Vector2Int(nx, ny));
                 }
             }
         }
 
-        Tuple<List<Predator>, List<Prey>, HashSet<Vector2Int>> aliveNeighbors = Tuple.Create(predatorNeighbors, preyNeighbors, freeSpaces);
+        Tuple<List<Predator>, List<Prey>> aliveNeighbors = Tuple.Create(predatorNeighbors, preyNeighbors);
         return aliveNeighbors;
+    }
+
+    public List<Vector2Int> GetFreeSpaces(List<Vector2Int> occupedPositions, Vector2Int lastPos, int x, int y)
+    {
+        List<Vector2Int> freeSpaces = new List<Vector2Int>();
+
+        for (int dx = -1; dx <= 1; dx++)
+        {
+            for (int dy = -1; dy <= 1; dy++)
+            {
+                if (dx == 0 && dy == 0) continue; // No revisa su celda actual
+
+                int nx = x + dx, ny = y + dy;
+                if (nx >= 0 && ny >= 0 && nx < gridSize && ny < gridSize)
+                {
+                    if (frontGrid[nx, ny] == 0)
+                    {
+                        if (!occupedPositions.Contains(new Vector2Int(nx, ny)) && lastPos != new Vector2Int(nx, ny))
+                        {
+                            occupedPositions.Add(new Vector2Int(nx, ny));
+                            freeSpaces.Add(new Vector2Int(nx, ny));
+                        }
+                    }
+                }
+            }
+        }
+
+        return freeSpaces;
     }
 }
