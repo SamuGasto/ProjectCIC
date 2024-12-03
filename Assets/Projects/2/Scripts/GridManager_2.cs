@@ -15,8 +15,8 @@ public class GridManager_2 : MonoBehaviour
     [SerializeField] Tilemap tilemap_back;
     [SerializeField] Tilemap tilemap_front;
 
-    [SerializeField] float predatorPreyDensity = 0.5f;
-    [SerializeField] int numberOfPredatorsDiesWitoutFood = 3;
+    public float predatorPreyDensity = 0.5f;
+    public int numberOfPredatorsDiesWitoutFood = 3;
     public int[,] frontGrid;
     public bool[,] backGrid;
     [System.Serializable]
@@ -119,6 +119,13 @@ public class GridManager_2 : MonoBehaviour
 
             }
         }
+    }
+
+    public void Randomize()
+    {
+        ClearTileMap();
+        InitializeGrid();
+        InitialPlaceEntity();
     }
 
     public void UpdateGrid()

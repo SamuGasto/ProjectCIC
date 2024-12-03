@@ -11,25 +11,25 @@ public class PlayerInteraction_2 : MonoBehaviour
     public TileBase preyTile;
     public TileBase predatorTile;
     public Tilemap tilemap;
+    public bool InHUD;
+    Vector3Int mousePos;
+
+    private void Update()
+    {
+        HandleInput();
+    }
 
     public void HandleInput()
     {
-        Vector3Int pos = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(playerInputs.mousePosition));
-        if (playerInputs.isClicking && !EventSystem.current.IsPointerOverGameObject())
-        {
-
-            PlaceTile(pos);
-        }
-        else if (playerInputs.isSecondaryClicking && !EventSystem.current.IsPointerOverGameObject())
-        {
-            RemoveTile(pos);
-        }
+        mousePos = tilemap.WorldToCell(Camera.main.ScreenToWorldPoint(playerInputs.mousePosition));
+        InHUD = !EventSystem.current.IsPointerOverGameObject();
     }
 
-    private void PlaceTile(Vector3Int pos)
+
+    public void PlaceTile()
     {
-        if (!IsWithinBounds(pos)) return;
-        Debug.Log($"Placing tile at {pos}");
+        Vector3Int pos = mousePos;
+        if (!IsWithinBounds(pos) || InHUD) return;
 
         if (gridManager.frontGrid[pos.x, pos.y] == 0)
         {
@@ -51,9 +51,10 @@ public class PlayerInteraction_2 : MonoBehaviour
 
     }
 
-    private void RemoveTile(Vector3Int pos)
+    public void RemoveTile()
     {
-        if (!IsWithinBounds(pos) || gridManager.frontGrid[pos.x, pos.y] == 0) return;
+        Vector3Int pos = mousePos;
+        if (!IsWithinBounds(pos) || gridManager.frontGrid[pos.x, pos.y] == 0 || InHUD) return;
 
         if (gridManager.frontGrid[pos.x, pos.y] == 1)
         {

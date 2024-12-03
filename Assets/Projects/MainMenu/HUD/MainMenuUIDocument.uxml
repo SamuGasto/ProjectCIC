@@ -4,7 +4,7 @@
         <engine:Label text="Proyecto CIC" name="Title" class="title" />
         <engine:GroupBox class="groupbox">
             <engine:Button text="Game of Life" name="GameOfLifeButton" class="button" />
-            <engine:Button text="2" name="2Button" enabled="false" class="button" />
+            <engine:Button text="2" name="2Button" enabled="true" class="button" />
             <engine:Button text="3" name="3Button" enabled="false" class="button" />
             <engine:Button text="4" name="4Button" enabled="false" class="button" />
             <engine:Button text="5" name="5Button" enabled="false" class="button" />

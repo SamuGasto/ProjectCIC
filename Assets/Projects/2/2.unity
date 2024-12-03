@@ -265,8 +265,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isPlaying: 0
   Tiempo: 0
-  maxTimerValue: 4
-  timer: 4
+  maxTimerValue: 10
+  timer: 10
   velocidadPasoDelTiempo: 1
   gridManager: {fileID: 199335664}
   playerInteraction: {fileID: 199335667}
@@ -302,6 +302,7 @@ MonoBehaviour:
   preyTile: {fileID: 11400000, guid: 5fc7f4b6892b8304286f4cfd04460bc2, type: 2}
   predatorTile: {fileID: 11400000, guid: 4b11ac7783e3ea12797073585a0c87fb, type: 2}
   tilemap: {fileID: 1981284010}
+  InHUD: 0
 --- !u!1 &349431718
 GameObject:
   m_ObjectHideFlags: 0
@@ -385,6 +386,75 @@ PolygonCollider2D:
       - {x: 66, y: 66}
       - {x: 66, y: 1}
   m_UseDelaunayMesh: 0
+--- !u!1 &535288200
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 535288202}
+  - component: {fileID: 535288201}
+  - component: {fileID: 535288203}
+  m_Layer: 5
+  m_Name: PlayerHUD
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &535288201
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535288200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 19102, guid: 0000000000000000e000000000000000, type: 0}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_PanelSettings: {fileID: 11400000, guid: 5040bf47db4fcf965ab26a01553e7065, type: 2}
+  m_ParentUI: {fileID: 0}
+  sourceAsset: {fileID: 9197481963319205126, guid: 6943bda7caa4d956bb11d008b69faf2c, type: 3}
+  m_SortingOrder: 1
+  m_WorldSpaceSizeMode: 1
+  m_WorldSpaceWidth: 1920
+  m_WorldSpaceHeight: 1080
+--- !u!4 &535288202
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535288200}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &535288203
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535288200}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 58e722af8d769c14b95d8f9ac5cbbc07, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManager: {fileID: 199335665}
+  gridManager: {fileID: 199335664}
+  isPlaying: 0
+  playIcon: {fileID: 6971524035090072126, guid: edd9c5ce9878b66d8a058f1d71c381e0, type: 3}
+  stopIcon: {fileID: -3970520610902567800, guid: 148722896dabbd7e5b1ff18f90107376, type: 3}
 --- !u!114 &557356994
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -742,6 +812,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerInteraction: {fileID: 199335667}
   isClicking: 0
+  startClicking: 0
   isSecondaryClicking: 0
   mousePosition: {x: 0, y: 0}
   movement: {x: 0, y: 0}
@@ -1334,3 +1405,4 @@ SceneRoots:
   - {fileID: 1905769732}
   - {fileID: 50575880}
   - {fileID: 1348087955}
+  - {fileID: 535288202}

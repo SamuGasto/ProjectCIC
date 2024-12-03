@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class PlayerInputs_2 : MonoBehaviour
 {
@@ -7,24 +8,10 @@ public class PlayerInputs_2 : MonoBehaviour
     public PlayerInteraction_2 playerInteraction;
     [Header("Flags")]
     public bool isClicking;
+    public bool startClicking;
     public bool isSecondaryClicking;
     public Vector2 mousePosition;
     public Vector2 movement;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-        if (isSecondaryClicking)
-        {
-            playerInteraction.HandleInput();
-        }
-    }
 
     void OnMove(InputValue value)
     {
@@ -36,16 +23,29 @@ public class PlayerInputs_2 : MonoBehaviour
 
         if (isClicking)
         {
-            playerInteraction.HandleInput();
+            playerInteraction.PlaceTile();
         }
+
     }
     void OnSecondaryClick(InputValue value)
     {
         isSecondaryClicking = value.Get<float>() > 0 ? true : false;
+
+        if (isSecondaryClicking)
+        {
+            playerInteraction.RemoveTile();
+        }
     }
     void OnPoint(InputValue value)
     {
         mousePosition = value.Get<Vector2>();
+    }
+    void OnExit(InputValue value)
+    {
+        if (value.Get<float>() > 0)
+        {
+            SceneManager.LoadScene("MainMenu");
+        }
     }
 }
 
