@@ -21,9 +21,9 @@ public class GridManager_3 : MonoBehaviour
     [SerializeField] Tilemap tilemap_front;
     [SerializeField] Tilemap tilemap_back;
 
-
     public void PresentarCelda(Celda celda)
     {
+        Debug.Log("---------- Celda -----------");
         Debug.Log("Coordenadas Celda: " + celda.coordenadas_globales_asociadas.x + ", " + celda.coordenadas_globales_asociadas.y);
         if (celda.celda_izquierda != null)
             Debug.Log("Celda izquierda: " + celda.celda_izquierda.coordenadas_globales_asociadas.x + ", " + celda.celda_izquierda.coordenadas_globales_asociadas.y);
@@ -33,7 +33,16 @@ public class GridManager_3 : MonoBehaviour
             Debug.Log("Celda superior: " + celda.celda_superior.coordenadas_globales_asociadas.x + ", " + celda.celda_superior.coordenadas_globales_asociadas.y);
         if (celda.celda_inferior != null)
             Debug.Log("Celda inferior: " + celda.celda_inferior.coordenadas_globales_asociadas.x + ", " + celda.celda_inferior.coordenadas_globales_asociadas.y);
-        Debug.Log("---------------------");
+        Debug.Log("---------- Datos -----------");
+        Debug.Log("Hungry predators: " + celda.hungry_predadores.Count);
+        Debug.Log("Full predators: " + celda.full_predadores.Count);
+        Debug.Log("Presas: " + celda.presas.Count);
+        Debug.Log("---------- Local grid -----------");
+        for (int i = 2; i >= 0; i--)
+        {
+            Debug.Log("[" + celda.local_grid[0, i] + ", " + celda.local_grid[1, i] + ", " + celda.local_grid[2, i] + ", " + celda.local_grid[3, i] + "]");
+        }
+        Debug.Log("---------- Fin -----------");
     }
     public void ImprimirCelda(Celda celda)
     {
@@ -146,7 +155,9 @@ public class GridManager_3 : MonoBehaviour
         foreach (var celda in celdas)
         {
             ImprimirCelda(celda);
+            PresentarCelda(celda);
         }
+        Debug.Log("---------- CONCLUYÓ UPDATE -----------");
     }
     public void Predacion_Reproduccion(Celda celda)
     {
@@ -155,12 +166,12 @@ public class GridManager_3 : MonoBehaviour
         {
             if (celda.presas.Count <= 0)
             {
-                Predador predador_hambriendo_seleccionado = celda.hungry_predadores[0];
+                Predador predador_hambriento_seleccionado = celda.hungry_predadores.First();
                 if (celda.hungry_predadores.Count > 1)
                 {
-                    predador_hambriendo_seleccionado = celda.hungry_predadores[UnityEngine.Random.Range(0, celda.hungry_predadores.Count)];
+                    predador_hambriento_seleccionado = celda.hungry_predadores[UnityEngine.Random.Range(0, celda.hungry_predadores.Count)];
                 }
-                celda.RemovePredador(predador_hambriendo_seleccionado);
+                celda.RemovePredador(predador_hambriento_seleccionado);
             }
         }
 
@@ -178,12 +189,12 @@ public class GridManager_3 : MonoBehaviour
             {
                 if (celda.full_predadores.Count <= 3)
                 {
-                    Presa presa_seleccionada = celda.presas[0];
+                    Presa presa_seleccionada = celda.presas.First();
                     if (celda.presas.Count > 1)
                     {
                         presa_seleccionada = celda.presas[UnityEngine.Random.Range(0, celda.presas.Count)];
                     }
-                    Predador predador_hambriendo_seleccionado = celda.hungry_predadores[0];
+                    Predador predador_hambriendo_seleccionado = celda.hungry_predadores.First();
                     if (celda.hungry_predadores.Count > 1)
                     {
                         predador_hambriendo_seleccionado = celda.hungry_predadores[UnityEngine.Random.Range(0, celda.hungry_predadores.Count)];
@@ -205,7 +216,7 @@ public class GridManager_3 : MonoBehaviour
         {
             if (celda.full_predadores.Count > 0)
             {
-                Predador predador_seleccionado = celda.full_predadores[0];
+                Predador predador_seleccionado = celda.full_predadores.First();
                 if (celda.full_predadores.Count > 1)
                 {
                     predador_seleccionado = celda.full_predadores[UnityEngine.Random.Range(0, celda.full_predadores.Count)];
@@ -231,7 +242,7 @@ public class GridManager_3 : MonoBehaviour
             {
                 if (celda.hungry_predadores.Count < 3)
                 {
-                    Predador predador_seleccionado = celda.full_predadores[0];
+                    Predador predador_seleccionado = celda.full_predadores.First();
                     if (celda.full_predadores.Count > 1)
                     {
                         predador_seleccionado = celda.full_predadores[UnityEngine.Random.Range(0, celda.full_predadores.Count)];
@@ -264,20 +275,61 @@ public class GridManager_3 : MonoBehaviour
     public void SeleccionDeDireccion(Celda celda)
     {
         List<int> initial_directions = new List<int>();
-        if (celda.celda_izquierda != null)
-            initial_directions.Add(0);
-        if (celda.celda_derecha != null)
-            initial_directions.Add(1);
-        if (celda.celda_superior != null)
-            initial_directions.Add(2);
-        if (celda.celda_inferior != null)
-            initial_directions.Add(3);
+        if (celda.hungry_predadores.Count < 4)
+        {
+            if (celda.celda_izquierda != null)
+                initial_directions.Add(0);
+            if (celda.celda_derecha != null)
+                initial_directions.Add(1);
+            if (celda.celda_superior != null)
+                initial_directions.Add(2);
+            if (celda.celda_inferior != null)
+                initial_directions.Add(3);
+        }
 
-        DistribuirPredadores(celda, celda.hungry_predadores, initial_directions);
 
-        DistribuirPredadores(celda, celda.full_predadores, initial_directions);
+        if (initial_directions.Count > 0)
+        {
+            DistribuirPredadores(celda, celda.hungry_predadores, initial_directions);
+        }
 
-        DistribuirPresas(celda, celda.presas, initial_directions);
+        initial_directions = new List<int>();
+        if (celda.full_predadores.Count < 4)
+        {
+            if (celda.celda_izquierda != null)
+                initial_directions.Add(0);
+            if (celda.celda_derecha != null)
+                initial_directions.Add(1);
+            if (celda.celda_superior != null)
+                initial_directions.Add(2);
+            if (celda.celda_inferior != null)
+                initial_directions.Add(3);
+        }
+
+        if (initial_directions.Count > 0)
+        {
+            DistribuirPredadores(celda, celda.full_predadores, initial_directions);
+        }
+
+
+        initial_directions = new List<int>();
+        if (celda.presas.Count < 4)
+        {
+            if (celda.celda_izquierda != null)
+                initial_directions.Add(0);
+            if (celda.celda_derecha != null)
+                initial_directions.Add(1);
+            if (celda.celda_superior != null)
+                initial_directions.Add(2);
+            if (celda.celda_inferior != null)
+                initial_directions.Add(3);
+        }
+
+        if (initial_directions.Count > 0)
+        {
+            DistribuirPresas(celda, celda.presas, initial_directions);
+        }
+
     }
     public void DistribuirPredadores(Celda celda_origen, List<Predador> predadores, List<int> initial_directions)
     {
@@ -288,24 +340,67 @@ public class GridManager_3 : MonoBehaviour
 
             for (int i = 0; i < predadores.Count; i++)
             {
-                int direccion = direcciones_usadas[UnityEngine.Random.Range(0, direcciones_usadas.Count)];
-                direcciones_usadas.Remove(direccion);
+                if (direcciones_usadas.Count <= 0)
+                {
+                    return;
+                }
+
+                int direccion = direcciones_usadas.Count > 1 ? direcciones_usadas[UnityEngine.Random.Range(0, direcciones_usadas.Count)] : direcciones_usadas.First();
+
 
                 Predador predador_seleccionado = predador_list[UnityEngine.Random.Range(0, predador_list.Count)];
-                celda_origen.RemovePredador(predador_seleccionado);
-                predador_list.Remove(predador_seleccionado);
+                if (celda_origen.RemovePredador(predador_seleccionado))
+                {
+                    if (direccion == 0)
+                    {
+                        celda_origen.celda_izquierda.AddPredador(predador_seleccionado);
+                    }
+                    else if (direccion == 1)
+                    {
+                        celda_origen.celda_derecha.AddPredador(predador_seleccionado);
+                    }
+                    else if (direccion == 2)
+                    {
+                        celda_origen.celda_superior.AddPredador(predador_seleccionado);
+                    }
+                    else if (direccion == 3)
+                    {
+                        celda_origen.celda_inferior.AddPredador(predador_seleccionado);
+                    }
 
+                    direcciones_usadas.Remove(direccion);
 
-                AsignarCeldaVecina(celda_origen, direccion).AddPredador(predador_seleccionado);
+                    predador_list.Remove(predador_seleccionado);
+                }
             }
         }
         else if (predadores.Count == 1)
         {
+            if (direcciones_usadas.Count <= 0)
+            {
+                return;
+            }
             int direccion = direcciones_usadas[UnityEngine.Random.Range(0, direcciones_usadas.Count)];
             Predador predador_seleccionado = predadores.First();
-            celda_origen.RemovePredador(predador_seleccionado);
-
-            AsignarCeldaVecina(celda_origen, direccion).AddPredador(predador_seleccionado);
+            if (celda_origen.RemovePredador(predador_seleccionado))
+            {
+                if (direccion == 0)
+                {
+                    celda_origen.celda_izquierda.AddPredador(predador_seleccionado);
+                }
+                else if (direccion == 1)
+                {
+                    celda_origen.celda_derecha.AddPredador(predador_seleccionado);
+                }
+                else if (direccion == 2)
+                {
+                    celda_origen.celda_superior.AddPredador(predador_seleccionado);
+                }
+                else if (direccion == 3)
+                {
+                    celda_origen.celda_inferior.AddPredador(predador_seleccionado);
+                }
+            }
         }
     }
     public void DistribuirPresas(Celda celda_origen, List<Presa> presas, List<int> initial_directions)
@@ -317,45 +412,74 @@ public class GridManager_3 : MonoBehaviour
 
             for (int i = 0; i < presas.Count; i++)
             {
-                int direccion = direcciones_usadas[UnityEngine.Random.Range(0, direcciones_usadas.Count)];
-                direcciones_usadas.Remove(direccion);
+                if (direcciones_usadas.Count <= 0)
+                {
+                    return;
+                }
+                int direccion = direcciones_usadas.Count > 1 ? direcciones_usadas[UnityEngine.Random.Range(0, direcciones_usadas.Count)] : direcciones_usadas.First();
+
 
                 Presa presa_seleccionada = presas_list[UnityEngine.Random.Range(0, presas_list.Count)];
-                celda_origen.RemovePresa(presa_seleccionada);
-                presas_list.Remove(presa_seleccionada);
+                if (celda_origen.RemovePresa(presa_seleccionada))
+                {
+                    if (direccion == 0)
+                    {
+                        celda_origen.celda_izquierda.AddPresa(presa_seleccionada);
+                    }
+                    else if (direccion == 1)
+                    {
+                        celda_origen.celda_derecha.AddPresa(presa_seleccionada);
+                    }
+                    else if (direccion == 2)
+                    {
+                        celda_origen.celda_superior.AddPresa(presa_seleccionada);
+                    }
+                    else if (direccion == 3)
+                    {
+                        celda_origen.celda_inferior.AddPresa(presa_seleccionada);
+                    }
 
+                    direcciones_usadas.Remove(direccion);
 
-                AsignarCeldaVecina(celda_origen, direccion).AddPresa(presa_seleccionada);
+                    presas_list.Remove(presa_seleccionada);
+                }
             }
         }
         else if (presas.Count == 1)
         {
+            if (direcciones_usadas.Count <= 0)
+            {
+                return;
+            }
+
             int direccion = direcciones_usadas[UnityEngine.Random.Range(0, direcciones_usadas.Count)];
             Presa presa_seleccionada = presas.First();
-            celda_origen.RemovePresa(presa_seleccionada);
 
-            AsignarCeldaVecina(celda_origen, direccion).AddPresa(presa_seleccionada);
+            if (celda_origen.RemovePresa(presa_seleccionada))
+            {
+                if (direccion == 0)
+                {
+                    celda_origen.celda_izquierda.AddPresa(presa_seleccionada);
+                }
+                else if (direccion == 1)
+                {
+                    celda_origen.celda_derecha.AddPresa(presa_seleccionada);
+                }
+                else if (direccion == 2)
+                {
+                    celda_origen.celda_superior.AddPresa(presa_seleccionada);
+                }
+                else if (direccion == 3)
+                {
+                    celda_origen.celda_inferior.AddPresa(presa_seleccionada);
+                }
+            }
         }
     }
-    public Celda AsignarCeldaVecina(Celda celda_origen, int direccion)
-    {
-        switch (direccion)
-        {
-            case 0:
-                return celda_origen.celda_izquierda;
-            case 1:
-                return celda_origen.celda_derecha;
-            case 2:
-                return celda_origen.celda_superior;
-            case 3:
-                return celda_origen.celda_izquierda;
-        }
-        return celda_origen;
-    }
-    public Tuple<List<Celda>> ObtenerCeldasVecinas(Vector2Int pos_cell)
-    {
-        Tuple<List<Celda>> celdasVecinas = Tuple.Create(new List<Celda>());
 
-        return celdasVecinas;
+    public void GenerarJSON()
+    {
+
     }
+
 }
